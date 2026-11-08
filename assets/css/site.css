@@ -12,9 +12,9 @@
   --text: #3A2E25;
   --muted: #6E5D4E;
   --line: #DCCDB5;
-  --dark: #5A4636;          /* brown blocks: name panel, page heroes, footer */
-  --dark-text: #FFF8EE;
-  --dark-muted: #E8D9C6;
+  --dark: #2F3133;          /* charcoal blocks: name panel, page heroes, footer */
+  --dark-text: #F5F1EA;
+  --dark-muted: #C8C4BC;
   --accent: #B4532A;        /* terracotta: buttons, borders */
   --accent-ink: #9A4422;    /* terracotta dark enough for text */
   --on-accent: #FFF8EE;
