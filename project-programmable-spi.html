@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=202611090014">
+<link rel="stylesheet" href="assets/css/site.css?v=202611090020">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -42,7 +42,7 @@
     </table>
     <p class="lede">A memory-mapped SPI master that lets a RISC-V CPU talk to off-chip devices. Software queues words in a transmit FIFO, the hardware handles the serial protocol, and received words come back through a receive FIFO. I wrote the spec, the RTL and the sanity testbench before handing the design to the DV team.</p>
     <div class="readings"><div class="reading"><div class="reading-val">4</div><div class="reading-unit">SPI modes, set at runtime</div></div><div class="reading"><div class="reading-val">8 × 32-bit</div><div class="reading-unit">TX and RX FIFOs</div></div><div class="reading"><div class="reading-val">4 / 8 / 16 / 32</div><div class="reading-unit">bit word widths</div></div><div class="reading"><div class="reading-val">5%</div><div class="reading-unit">area reduction after optimization</div></div></div>
-    <figure><img src="assets/img/spi-block.svg" alt="Block diagram of the SPI peripheral: CPU bus, registers, TX and RX FIFOs, spi_core, and the SCLK, MOSI, MISO and chip-select lines" loading="lazy"><figcaption><span class="fignum">Figure 1.</span>The peripheral's three parts: register block, FIFOs, and spi_core.</figcaption></figure>
+    <figure><div class="photo-slot"><span class="slot-label">Block diagram from the repo README</span></div><figcaption><span class="fignum">Figure 1.</span>The peripheral's three parts: register block, FIFOs, and spi_core.</figcaption></figure>
     <section class="section"><h2>The Problem</h2><p>SiliconJackets' RISC-V chip needs to talk to devices off the chip, and SPI is the most common way to do that. Driving SPI pins directly from software (bit-banging) wastes CPU time and makes timing fragile. The chip needed a hardware SPI block that software sets up through registers and then leaves alone.</p>
 <p>Different devices expect different settings, so the block had to be configurable at runtime: clock polarity and phase, word size, bit order, clock speed and which chip select to use. It also had to stay safe when software does something wrong.</p></section>
     <section class="section"><h2>The Process</h2><h3>Spec first</h3>

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=202611090014">
+<link rel="stylesheet" href="assets/css/site.css?v=202611090020">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -48,16 +48,13 @@
 <p>The filter itself is a 3-tap high-pass FIR. It removes low-frequency rumble and bass, with a null near 159 Hz, then applies a fixed ×4 gain to make up for the energy it removes.</p></section>
     <section class="section"><h2>The Process</h2><h3>Designing the filter</h3>
 <p>The taps are 0.5, −0.9922 and 0.5. To keep the hardware integer-only, I scaled them by 2<sup>7</sup> to get 64, −127 and 64. The two zeros of this filter sit close to 0 Hz, which puts the null at about 159 Hz. The output is scaled by ×4 (+12 dB) and rounded. Because the gain reaches almost 8× near 4 kHz, loud treble can overflow 16 bits, so the result saturates instead of wrapping around.</p>
-<figure><img src="assets/img/fir-response.png" alt="Magnitude response of the filter, with a deep null near 159 Hz and gain rising to about +18 dB at 4 kHz" loading="lazy"><figcaption><span class="fignum">Figure 2.</span>Magnitude response computed from the filter taps and gain: the bass is removed below a null near 159 Hz, and the gain rises to about +18 dB at 4 kHz.</figcaption></figure>
 <h3>From C++ to hardware with HLS</h3>
 <p>I wrote the filter as a short C++ function and used Vitis HLS to turn it into Verilog. The pragmas control the hardware HLS builds. <code>ARRAY_PARTITION</code> turns the delay line into individual registers instead of a RAM, <code>UNROLL</code> computes all three multiply-adds in parallel, and an <code>ap_ctrl_hs</code> start/done handshake lets my RTL feed it one sample at a time. Synthesis at a 10 ns target estimated about 6.6 ns, 1 cycle of latency, 192 LUTs and 81 flip-flops. Because the coefficients are constants, the multiplies reduce to shifts and adds, so the block uses no DSP slices.</p>
 <h3>The SystemVerilog around it</h3>
 <p>Everything around the filter is hand-written SystemVerilog. A UART receiver at 1 Mbaud takes in bytes, a sample assembler pairs them into 16-bit samples, and a small controller drives the filter's handshake. A 512-sample FIFO buffers the results, and a UART transmitter sends them back. A reset synchronizer and three status LEDs (RX activity, TX activity, FIFO overflow) made bring-up on the board much easier.</p>
-<figure><img src="assets/img/fir-block.svg" alt="Block diagram: PC to UART RX, sample assembler, HLS FIR filter, FIFO, UART TX, back to PC" loading="lazy"><figcaption><span class="fignum">Figure 3.</span>Data path from the laptop, through the FPGA, and back.</figcaption></figure>
 <h3>Verifying it</h3>
 <p>I built verification around a bit-accurate Python model of the filter, which reproduces the same integer math, rounding and saturation as the hardware. The model generates test vectors (impulses, full-scale extremes, a Nyquist-rate square wave, sine tones and noise), and a Vivado simulation of the whole top level checks the FPGA's output against them: 768 out of 768 samples match. On the real board, the host script compares every returned sample against the same model and reports PASS or FAIL.</p></section>
-    <section class="section"><h2>The Outcome</h2><p>The filter runs on the board in real time. A full audio clip goes in through the UART, comes back filtered, and matches the Python model on every sample. Played back, the output is clearly high-passed: the bass drops out and the treble gets brighter. The measured spectrum shows the same thing.</p>
-<figure><img src="assets/img/fir-spectrum.png" alt="Power spectrum of the input audio and the FPGA output: low frequencies are strongly reduced and high frequencies are boosted" loading="lazy"><figcaption><span class="fignum">Figure 4.</span>Spectrum of a test clip before and after the FPGA, computed from the recorded input and output audio: energy below a few hundred hertz is cut, and higher frequencies are lifted by the ×4 gain.</figcaption></figure>
+    <section class="section"><h2>The Outcome</h2><p>The filter runs on the board in real time. A full audio clip goes in through the UART, comes back filtered, and matches the Python model on every sample. Played back, the output is clearly high-passed: the bass drops out and the treble gets brighter. </p>
 <p>The main trade-off is the fixed gain. It makes up for the lost bass, but very loud treble can clip: about 0.6% of the samples in one of my test tracks saturated, while another track had none.</p></section>
     <section class="section"><h2>What I Learned</h2><ul>
 <li><strong>Fixed-point design:</strong> choosing a Q format for the coefficients, and deciding where to round and where to saturate, so the hardware stays exact and never wraps around.</li>
