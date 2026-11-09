@@ -239,3 +239,10 @@ a.card:hover { transform: translateY(-3px); border-color: var(--accent); color: 
 .home-intro .hi-text { max-width: 720px; padding: 40px 24px; }
 .home-intro .hi-text h2 { margin-bottom: 14px; }
 .home-intro .hi-text .btns { margin-top: 4px; }
+/* project figures and diagram thumbnails */
+.project-page figure img { width: 100%; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
+.project-page h3 { font-size: 1.2rem; margin: 26px 0 8px; }
+.project-page code { font-size: .9em; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+.project-page .section ul { padding-left: 20px; } .project-page .section li { margin-bottom: 8px; }
+.card .thumb.diagram > img { object-fit: contain; background: #FAF5EC; padding: 8px; }
+.card .thumb:has(> img) { border-bottom: 1px solid var(--line); }

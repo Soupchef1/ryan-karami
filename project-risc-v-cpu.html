@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=202611082051">
+<link rel="stylesheet" href="assets/css/site.css?v=202611090014">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -35,37 +35,32 @@
       <h1>5-Stage RISC-V CPU</h1>
     </header>
     <table class="projectmeta">
-      <tr><th>Role</th><td><p class="todo">Your role (e.g. RTL lead, solo designer, firmware).</p></td></tr>
-      <tr><th>Team</th><td><p class="todo">Team size / who you worked with.</p></td></tr>
-      <tr><th>Tools</th><td>SystemVerilog, Spartan-7, Computer Architecture, CDC</td></tr>
-      <tr><th>Links</th><td><p class="todo">GitHub repo, demo video, report PDF — whatever you can share.</p></td></tr>
+      <tr><th>Role</th><td><p class="todo">Your role on the project (which blocks you owned).</p></td></tr>
+      <tr><th>Team</th><td>Team of 3</td></tr>
+      <tr><th>Tools</th><td>SystemVerilog, Spartan-7, Computer Architecture, AXI, CDC</td></tr>
+      <tr><th>Links</th><td><a href="https://github.com/Soupchef1/RISC-V_CPU_Project">GitHub repository</a></td></tr>
     </table>
-    <div class="lede"><p class="todo">One or two sentence summary: what it is and the single most impressive result.</p></div>
-    <div class="readings"><div class="reading"><div class="reading-val">5</div><div class="reading-unit">pipeline stages</div></div><div class="reading"><div class="reading-val">90 MHz</div><div class="reading-unit">CPU clock</div></div><div class="reading"><div class="reading-val">32 KB</div><div class="reading-unit">I/D caches</div></div><div class="reading"><div class="reading-val">256 MB</div><div class="reading-unit">DDR3</div></div></div>
-    <figure><div class="photo-slot "><span class="slot-label">Hero photo of the project (one must be taken by you for the Discovery Project)</span></div><figcaption><span class="fignum">Figure 1.</span>Caption.</figcaption></figure>
-
-    <section class="section">
-      <h2>The Problem</h2>
-      <p class="todo">What need or question started this? Who is it for, and why does it matter? What were the constraints?</p>
-    </section>
-    <section class="section">
-      <h2>The Process</h2>
-      <p class="todo">How you approached it: architecture / block diagram, key design decisions and trade-offs, how you tested it. Walk through it in 2–4 short subsections.</p>
-      <div class="fig-pair">
-        <figure><div class="photo-slot "><span class="slot-label">Block diagram / schematic</span></div><figcaption><span class="fignum">Figure 2.</span>Caption.</figcaption></figure>
-        <figure><div class="photo-slot "><span class="slot-label">Waveform, sim result, or build photo</span></div><figcaption><span class="fignum">Figure 3.</span>Caption.</figcaption></figure>
-      </div>
-    </section>
-    <section class="section">
-      <h2>The Outcome</h2>
-      <p class="todo">Results with numbers, what worked, what didn't, and what you'd do next.</p>
-    </section>
-    <section class="section">
-      <h2>What I Learned</h2>
-      <p class="todo">2–3 takeaways — technical skills and soft skills (teamwork, debugging approach, etc.).</p>
-    </section>
+    <p class="lede">A 5-stage pipelined RV32I processor that runs real compiled C programs on an AMD Spartan-7 FPGA. It boots programs over UART, runs them out of on-board DDR3 through 32 KB instruction and data caches, and draws to a monitor over HDMI at 720p. My team of three built it over the summer.</p>
+    <div class="readings"><div class="reading"><div class="reading-val">90 MHz</div><div class="reading-unit">CPU clock</div></div><div class="reading"><div class="reading-val">5</div><div class="reading-unit">pipeline stages</div></div><div class="reading"><div class="reading-val">32 KB + 32 KB</div><div class="reading-unit">instruction / data caches</div></div><div class="reading"><div class="reading-val">720p60</div><div class="reading-unit">HDMI video out</div></div></div>
+    <figure><img src="assets/img/riscv-block.svg" alt="Block diagram of the five-stage pipeline, caches, AXI interconnect, DDR3, UART bootloader and HDMI output" loading="lazy"><figcaption><span class="fignum">Figure 1.</span>The five-stage core and the system around it.</figcaption></figure>
+    <section class="section"><h2>The Problem</h2><p>Coursework teaches what a pipeline is. We wanted to find out what it takes to build one that runs real software, not just a few hand-written test instructions. The goal was a CPU that could take any C program compiled with the standard RISC-V GNU toolchain and run it on an FPGA with visible output.</p>
+<p>That raised real-system problems. The board's DDR3 memory is far slower than the core, so we needed caches. Re-synthesizing the FPGA for every new program was too slow, so we needed a way to load programs at runtime. And we wanted something more satisfying than LEDs to show the result.</p></section>
+    <section class="section"><h2>The Process</h2><h3>The core</h3>
+<p>The base is the RV32I instruction set on a classic five-stage pipeline: fetch, decode, execute, memory and write-back. Hazard detection and data forwarding keep instructions flowing without unnecessary stalls. A 2-bit dynamic branch predictor, with about 7 KB of branch history stored in block RAM, cuts the cost of taken branches.</p>
+<h3>Memory hierarchy</h3>
+<p>The CPU uses a Harvard layout with separate instruction and data caches. Each is 32 KB and direct-mapped, with 512 lines of 64 bytes. On a miss, the cache refills its line from the board's 256 MB DDR3 over AXI, so a program can be much larger than the on-chip memory.</p>
+<h3>Making it usable</h3>
+<p>A UART bootloader loads compiled binaries straight into memory, and a Makefile and Python script handle compiling and uploading, so a new program runs without regenerating the bitstream. For output, the design reads a frame buffer in DDR3 and drives a 720p, 60 Hz HDMI signal with TMDS encoding and serialization. The demo C program draws to the screen by writing pixels into that frame buffer.</p>
+<h3>Timing and testing</h3>
+<p>We optimized the RTL until the core closed timing at 90 MHz. Each major block (ALU, fetch, decode, memory controller, bootloader, HDMI) has its own directed testbench, plus a top-level CPU test.</p></section>
+    <section class="section"><h2>The Outcome</h2><p>The finished CPU runs C programs compiled with the RISC-V GNU toolchain at 90 MHz, loads them over UART, and draws to a monitor at 720p. Next steps are the M (multiply/divide) and F (floating-point) extensions, keyboard input, and a full UVM verification environment to replace the directed tests.</p></section>
+    <section class="section"><h2>What I Learned</h2><ul>
+<li><strong>Pipelines are mostly about hazards:</strong> forwarding, stalls and branch prediction are where most of the design and debugging time went.</li>
+<li><strong>Memory sets the pace:</strong> the caches and the AXI path to DDR3 shaped the design as much as the core did.</li>
+<li><strong>Timing closure is part of the design:</strong> reaching 90 MHz meant restructuring logic, not just adding constraints.</li>
+</ul></section>
     
-    <nav class="pager" aria-label="More projects"><a href="project-discovery.html"><small>← Previous</small><strong>Discovery Project</strong></a><a class="next" href="project-programmable-spi.html"><small>Next →</small><strong>Programmable SPI Master</strong></a></nav>
+    <nav class="pager" aria-label="More projects"><a href="project-fir-filter.html"><small>← Previous</small><strong>FPGA FIR Filter</strong></a><a class="next" href="project-programmable-spi.html"><small>Next →</small><strong>Programmable SPI Master</strong></a></nav>
   </div>
 </article>
 </main>

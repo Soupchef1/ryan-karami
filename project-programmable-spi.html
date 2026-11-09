@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=202611082051">
+<link rel="stylesheet" href="assets/css/site.css?v=202611090014">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -35,37 +35,37 @@
       <h1>Programmable SPI Master</h1>
     </header>
     <table class="projectmeta">
-      <tr><th>Role</th><td><p class="todo">Your role (e.g. RTL lead, solo designer, firmware).</p></td></tr>
-      <tr><th>Team</th><td><p class="todo">Team size / who you worked with.</p></td></tr>
-      <tr><th>Tools</th><td>SystemVerilog, RTL, Verification</td></tr>
-      <tr><th>Links</th><td><p class="todo">GitHub repo, demo video, report PDF — whatever you can share.</p></td></tr>
+      <tr><th>Role</th><td>Digital Design Engineer: spec, RTL and sanity testbench</td></tr>
+      <tr><th>Team</th><td>SiliconJackets</td></tr>
+      <tr><th>Tools</th><td>SystemVerilog, RTL, Spec writing, Testbench</td></tr>
+      <tr><th>Links</th><td><a href="https://github.com/Soupchef1/Programmable-SPI-Peripheral-for-RISC-V-Core">GitHub repository</a></td></tr>
     </table>
-    <div class="lede"><p class="todo">One or two sentence summary: what it is and the single most impressive result.</p></div>
-    <div class="readings"><div class="reading"><div class="reading-val">2</div><div class="reading-unit">synchronous FIFOs</div></div><div class="reading"><div class="reading-val">5%</div><div class="reading-unit">area reduction</div></div><div class="reading"><div class="reading-val">100%</div><div class="reading-unit">functional verification</div></div></div>
-    <figure><div class="photo-slot "><span class="slot-label">Hero photo of the project (one must be taken by you for the Discovery Project)</span></div><figcaption><span class="fignum">Figure 1.</span>Caption.</figcaption></figure>
-
-    <section class="section">
-      <h2>The Problem</h2>
-      <p class="todo">What need or question started this? Who is it for, and why does it matter? What were the constraints?</p>
-    </section>
-    <section class="section">
-      <h2>The Process</h2>
-      <p class="todo">How you approached it: architecture / block diagram, key design decisions and trade-offs, how you tested it. Walk through it in 2–4 short subsections.</p>
-      <div class="fig-pair">
-        <figure><div class="photo-slot "><span class="slot-label">Block diagram / schematic</span></div><figcaption><span class="fignum">Figure 2.</span>Caption.</figcaption></figure>
-        <figure><div class="photo-slot "><span class="slot-label">Waveform, sim result, or build photo</span></div><figcaption><span class="fignum">Figure 3.</span>Caption.</figcaption></figure>
-      </div>
-    </section>
-    <section class="section">
-      <h2>The Outcome</h2>
-      <p class="todo">Results with numbers, what worked, what didn't, and what you'd do next.</p>
-    </section>
-    <section class="section">
-      <h2>What I Learned</h2>
-      <p class="todo">2–3 takeaways — technical skills and soft skills (teamwork, debugging approach, etc.).</p>
-    </section>
+    <p class="lede">A memory-mapped SPI master that lets a RISC-V CPU talk to off-chip devices. Software queues words in a transmit FIFO, the hardware handles the serial protocol, and received words come back through a receive FIFO. I wrote the spec, the RTL and the sanity testbench before handing the design to the DV team.</p>
+    <div class="readings"><div class="reading"><div class="reading-val">4</div><div class="reading-unit">SPI modes, set at runtime</div></div><div class="reading"><div class="reading-val">8 × 32-bit</div><div class="reading-unit">TX and RX FIFOs</div></div><div class="reading"><div class="reading-val">4 / 8 / 16 / 32</div><div class="reading-unit">bit word widths</div></div><div class="reading"><div class="reading-val">5%</div><div class="reading-unit">area reduction after optimization</div></div></div>
+    <figure><img src="assets/img/spi-block.svg" alt="Block diagram of the SPI peripheral: CPU bus, registers, TX and RX FIFOs, spi_core, and the SCLK, MOSI, MISO and chip-select lines" loading="lazy"><figcaption><span class="fignum">Figure 1.</span>The peripheral's three parts: register block, FIFOs, and spi_core.</figcaption></figure>
+    <section class="section"><h2>The Problem</h2><p>SiliconJackets' RISC-V chip needs to talk to devices off the chip, and SPI is the most common way to do that. Driving SPI pins directly from software (bit-banging) wastes CPU time and makes timing fragile. The chip needed a hardware SPI block that software sets up through registers and then leaves alone.</p>
+<p>Different devices expect different settings, so the block had to be configurable at runtime: clock polarity and phase, word size, bit order, clock speed and which chip select to use. It also had to stay safe when software does something wrong.</p></section>
+    <section class="section"><h2>The Process</h2><h3>Spec first</h3>
+<p>I wrote the specification before any RTL: six memory-mapped registers (CONFIG, CHIP_SELECT, TX_DATA, RX_DATA, STATUS and IRQ_ENABLE), every bit field and reset value, how a transfer should go, and a table of edge cases with what the hardware does in each one. That document became the contract with the CPU team and the DV team.</p>
+<h3>Architecture</h3>
+<p>The design has three parts. A register block decodes bus accesses and handles interrupts and chip selects. Two FIFOs, each 8 × 32-bit, buffer transmit and receive data. The <code>spi_core</code> contains the clock divider, the shift registers and a two-state IDLE/TRANSFER state machine. It supports all four SPI modes, 4-, 8-, 16- and 32-bit words, MSB- or LSB-first order, and a 16-bit clock divider.</p>
+<h3>Designing for the software that uses it</h3>
+<ul>
+<li><strong>Configuration shadowing:</strong> CONFIG changes take effect only between transfers, so a word is never sent with half-old, half-new settings.</li>
+<li><strong>Protected chip selects:</strong> software can't change the chip select or clock polarity mid-transfer. An illegal write is ignored and sets a sticky error flag.</li>
+<li><strong>No lost data:</strong> if the RX FIFO fills up, the core pauses instead of dropping received words.</li>
+<li><strong>Interrupts:</strong> one interrupt line with four maskable sources: error, data received, TX empty and transfer done.</li>
+</ul>
+<h3>Optimization and testing</h3>
+<p>After the first version worked, I optimized the RTL for area and cut it by 5%. A SystemVerilog testbench with an SPI slave model runs three directed tests. The first sends 32-bit words in mode 1 and checks both directions. The second sends nine 8-bit words to push the FIFO past full. The third tries an illegal chip-select change mid-transfer and checks that the hardware ignores it, flags the error, raises the interrupt and still finishes the word correctly.</p></section>
+    <section class="section"><h2>The Outcome</h2><p>The peripheral passes all of its directed checks and is going into SiliconJackets' third RISC-V core tapeout. The spec also lists the assertions the DV team should add, and it documents one known limitation for software: a clock-ratio setting of 0 or 1 hangs the core, so drivers must use 2 or more.</p></section>
+    <section class="section"><h2>What I Learned</h2><ul>
+<li><strong>Write the spec first:</strong> deciding every register and edge case on paper made the RTL faster to write and much easier to review.</li>
+<li><strong>Design for the software that will use it:</strong> most of the complexity is in handling mistakes safely, not in the shift register.</li>
+<li><strong>Think like DV:</strong> listing the assertions and corner cases for the verification team made me catch my own bugs earlier.</li>
+</ul></section>
     
-    <nav class="pager" aria-label="More projects"><a href="project-risc-v-cpu.html"><small>← Previous</small><strong>5-Stage RISC-V CPU</strong></a><a class="next" href="project-fir-filter.html"><small>Next →</small><strong>FPGA FIR Filter</strong></a></nav>
+    <nav class="pager" aria-label="More projects"><a href="project-risc-v-cpu.html"><small>← Previous</small><strong>5-Stage RISC-V CPU</strong></a><a class="next" href="project-haptic-headband.html"><small>Next →</small><strong>Accessible Gaming Headband</strong></a></nav>
   </div>
 </article>
 </main>
