@@ -233,3 +233,5 @@ a.card:hover { transform: translateY(-3px); border-color: var(--accent); color: 
 .interest .photo-slot.tall { aspect-ratio: 4 / 5; max-width: 420px; width: 100%; justify-self: center; }
 .hh-photo { min-height: 360px; }
 .headshot > img { border-radius: 50%; }
+/* home headshot: narrower, taller photo box so the portrait is cropped less */
+@media (min-width: 820px) { .hh-grid { grid-template-columns: 1fr 1fr; min-height: 480px; } }
