@@ -235,3 +235,7 @@ a.card:hover { transform: translateY(-3px); border-color: var(--accent); color: 
 .headshot > img { border-radius: 50%; }
 /* home headshot: narrower, taller photo box so the portrait is cropped less */
 @media (min-width: 820px) { .hh-grid { grid-template-columns: 1fr 1fr; min-height: 480px; } }
+/* home green band: compact, centered, no photo */
+.home-intro .hi-text { max-width: 720px; padding: 40px 24px; }
+.home-intro .hi-text h2 { margin-bottom: 14px; }
+.home-intro .hi-text .btns { margin-top: 4px; }
