@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Accessible Gaming Headband · Ryan Karami</title>
+<title>GameSense: Accessible Gaming Headband · Ryan Karami</title>
 <meta name="description" content="Ryan Karami — Electrical Engineering student at Georgia Tech focused on digital design and verification.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=202611090048">
+<link rel="stylesheet" href="assets/css/site.css?v=202611090055">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -31,22 +31,34 @@
   <div class="wrap read">
     <a class="backlink" href="projects.html">← All projects</a>
     <header class="project-head">
-      <p class="eyebrow">Hackathon · Mar 2026</p>
-      <h1>Accessible Gaming Headband</h1>
+      <p class="eyebrow">Tech(Hack) Hackathon · Mar 2026 · Winner</p>
+      <h1>GameSense: Accessible Gaming Headband</h1>
     </header>
     <table class="projectmeta">
-      <tr><th>Role</th><td><p class="todo">Your role on the project (which blocks you owned).</p></td></tr>
-      <tr><th>Team</th><td><p class="todo">Team size / who you worked with.</p></td></tr>
-      <tr><th>Tools</th><td>ESP32, C++, Altium</td></tr>
-      <tr><th>Links</th><td><p class="todo">GitHub repo, demo video, report PDF — whatever you can share.</p></td></tr>
+      
+      <tr><th>Team</th><td>Team of 4: William Schotte, Sumedh Kothari, Chase Twyman and me</td></tr>
+      <tr><th>Tools</th><td>ESP32, C++, Python, WASAPI, Altium</td></tr>
+      <tr><th>Links</th><td><a href="https://github.com/sumedhk0/Game-Sense-TechHackValley">GitHub repository</a> · <a href="https://devpost.com/software/gamesense-78fswv">Devpost</a></td></tr>
     </table>
-    <div class="lede"><p class="todo">One or two sentence summary: what it is and the single most impressive result.</p></div>
-    <div class="readings"><div class="reading"><div class="reading-val">8</div><div class="reading-unit">vibration motors</div></div><div class="reading"><div class="reading-val">4</div><div class="reading-unit">person team</div></div></div>
-    <figure><div class="photo-slot "><span class="slot-label">Hero photo of the project</span></div><figcaption><span class="fignum">Figure 1.</span>Caption.</figcaption></figure>
-    <section class="section"><h2>The Problem</h2><p class="todo">What need or question started this? Who is it for, and why does it matter? What were the constraints?</p></section>
-    <section class="section"><h2>The Process</h2><p class="todo">How you approached it: architecture, key design decisions and trade-offs, how you tested it.</p></section>
-    <section class="section"><h2>The Outcome</h2><p class="todo">Results with numbers, what worked, what didn't, and what you'd do next.</p></section>
-    <section class="section"><h2>What I Learned</h2><p class="todo">2–3 takeaways — technical and soft skills.</p></section>
+    <p class="lede">A wearable headband that lets deaf and hard-of-hearing gamers feel where sounds are coming from. GameSense captures a game's 7.1 surround audio, works out the direction and intensity of sounds like footsteps and gunfire in real time, and plays them back as vibrations around the player's head. Head-tilt sensing adds hands-free movement control. It won the Tech(Hack) hackathon.</p>
+    <div class="readings"><div class="reading"><div class="reading-val">8</div><div class="reading-unit">vibration motors around the head</div></div><div class="reading"><div class="reading-val">7.1</div><div class="reading-unit">surround audio input</div></div><div class="reading"><div class="reading-val">4</div><div class="reading-unit">person team</div></div><div class="reading"><div class="reading-val">Winner</div><div class="reading-unit">Tech(Hack) hackathon</div></div></div>
+    <figure><img src="https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/004/408/620/datas/gallery.jpg" alt="The full GameSense setup: headband, electronics and gaming PC" loading="lazy"><figcaption><span class="fignum">Figure 1.</span>The full setup: headband, electronics and gaming PC.</figcaption></figure>
+    <section class="section"><h2>The Problem</h2><p>In competitive games, sound is information. Footsteps, gunfire and other spatial audio tell you where threats are, and deaf and hard-of-hearing players miss all of it. We wanted to turn that audio into something players could feel instead of hear.</p>
+<p>The design had to work with real games, respond fast enough to be useful in play, and be comfortable enough to wear for a whole session. We also wanted to help players with limited hand or arm mobility, which led to adding head-tilt controls.</p></section>
+    <section class="section"><h2>The Process</h2><h3>Capturing game audio</h3>
+<p>We set the game to native 7.1 surround output and captured the stream at the operating-system level with Windows' WASAPI loopback. This gave us separate channels for each direction without touching the game itself, which mattered because hooking into a game directly risks setting off its anti-cheat system.</p>
+<h3>Turning sound into direction</h3>
+<p>A Python program processes the captured audio in real time to estimate where each sound is coming from and how loud it is. It then maps that to motor outputs, so a footstep behind you on the left becomes a vibration at the back left of your head.</p>
+<h3>The headband</h3>
+<p>Eight vibration motors sit around a lightweight headband, driven by an ESP32 running embedded C++ firmware. An IMU tracks head tilt, so small head movements can control movement in game. We built and tested the circuit on a breadboard first, then designed an enclosure for the electronics.</p>
+<div class="fig-pair">
+<figure><img src="https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/004/408/623/datas/gallery.jpg" alt="Breadboard prototype of the GameSense electronics" loading="lazy"><figcaption><span class="fignum">Figure 2.</span>Breadboard prototype.</figcaption></figure>
+<figure><img src="https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/004/408/621/datas/gallery.jpg" alt="The GameSense headband with vibration motors" loading="lazy"><figcaption><span class="fignum">Figure 3.</span>The headband.</figcaption></figure>
+</div>
+<figure><img src="https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/004/408/619/datas/gallery.jpg" alt="CAD render of the GameSense electronics enclosure" loading="lazy"><figcaption><span class="fignum">Figure 4.</span>CAD render of the electronics enclosure.</figcaption></figure></section>
+    <section class="section"><h2>The Outcome</h2><p>We finished a working prototype within the hackathon: a light, comfortable headband that players stop noticing after a few minutes, with directional vibration that makes in-game audio feel immersive. GameSense won the Tech(Hack) hackathon.</p>
+<p>Next steps would be support for macOS, Linux and consoles such as PlayStation, customizable feedback profiles, and an open-source release.</p></section>
+    
     
     <nav class="pager" aria-label="More projects"><a href="project-programmable-spi.html"><small>← Previous</small><strong>Programmable SPI Master</strong></a></nav>
   </div>
