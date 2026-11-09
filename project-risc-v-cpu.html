@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=202611090023">
+<link rel="stylesheet" href="assets/css/site.css?v=202611090031">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -35,7 +35,7 @@
       <h1>5-Stage RISC-V CPU</h1>
     </header>
     <table class="projectmeta">
-      <tr><th>Role</th><td><p class="todo">Your role on the project (which blocks you owned).</p></td></tr>
+      
       <tr><th>Team</th><td>Team of 3</td></tr>
       <tr><th>Tools</th><td>SystemVerilog, Spartan-7, Computer Architecture, AXI, CDC</td></tr>
       <tr><th>Links</th><td><a href="https://github.com/Soupchef1/RISC-V_CPU_Project">GitHub repository</a></td></tr>
@@ -55,11 +55,7 @@
 <h3>Timing and testing</h3>
 <p>We optimized the RTL until the core closed timing at 90 MHz. Each major block (ALU, fetch, decode, memory controller, bootloader, HDMI) has its own directed testbench, plus a top-level CPU test.</p></section>
     <section class="section"><h2>The Outcome</h2><p>The finished CPU runs C programs compiled with the RISC-V GNU toolchain at 90 MHz, loads them over UART, and draws to a monitor at 720p. Next steps are the M (multiply/divide) and F (floating-point) extensions, keyboard input, and a full UVM verification environment to replace the directed tests.</p></section>
-    <section class="section"><h2>What I Learned</h2><ul>
-<li><strong>Pipelines are mostly about hazards:</strong> forwarding, stalls and branch prediction are where most of the design and debugging time went.</li>
-<li><strong>Memory sets the pace:</strong> the caches and the AXI path to DDR3 shaped the design as much as the core did.</li>
-<li><strong>Timing closure is part of the design:</strong> reaching 90 MHz meant restructuring logic, not just adding constraints.</li>
-</ul></section>
+    
     
     <nav class="pager" aria-label="More projects"><a href="project-fir-filter.html"><small>← Previous</small><strong>FPGA FIR Filter</strong></a><a class="next" href="project-programmable-spi.html"><small>Next →</small><strong>Programmable SPI Master</strong></a></nav>
   </div>

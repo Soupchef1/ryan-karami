@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=202611090023">
+<link rel="stylesheet" href="assets/css/site.css?v=202611090031">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -35,14 +35,14 @@
       <h1>Programmable SPI Master</h1>
     </header>
     <table class="projectmeta">
-      <tr><th>Role</th><td>Digital Design Engineer: spec, RTL and sanity testbench</td></tr>
+      
       <tr><th>Team</th><td>SiliconJackets</td></tr>
       <tr><th>Tools</th><td>SystemVerilog, RTL, Spec writing, Testbench</td></tr>
       <tr><th>Links</th><td><a href="https://github.com/Soupchef1/Programmable-SPI-Peripheral-for-RISC-V-Core">GitHub repository</a></td></tr>
     </table>
     <p class="lede">A memory-mapped SPI master that lets a RISC-V CPU talk to off-chip devices. Software queues words in a transmit FIFO, the hardware handles the serial protocol, and received words come back through a receive FIFO. I wrote the spec, the RTL and the sanity testbench before handing the design to the DV team.</p>
     <div class="readings"><div class="reading"><div class="reading-val">4</div><div class="reading-unit">SPI modes, set at runtime</div></div><div class="reading"><div class="reading-val">8 × 32-bit</div><div class="reading-unit">TX and RX FIFOs</div></div><div class="reading"><div class="reading-val">4 / 8 / 16 / 32</div><div class="reading-unit">bit word widths</div></div><div class="reading"><div class="reading-val">5%</div><div class="reading-unit">area reduction after optimization</div></div></div>
-    <figure><div class="photo-slot"><span class="slot-label">Block diagram from the repo README</span></div><figcaption><span class="fignum">Figure 1.</span>The peripheral's three parts: register block, FIFOs, and spi_core.</figcaption></figure>
+    <figure><img src="assets/img/spi-diagram.png" alt="Block diagram: MMIO bus to the registers and control block, which pushes to the TX FIFO, sends the active config to spi_core, and pops the RX FIFO; spi_core drives sclk and mosi and reads miso" loading="lazy"><figcaption><span class="fignum">Figure 1.</span>Registers and control, the TX and RX FIFOs, and spi_core. The core runs from the active copy of CONFIG.</figcaption></figure>
     <section class="section"><h2>The Problem</h2><p>SiliconJackets' RISC-V chip needs to talk to devices off the chip, and SPI is the most common way to do that. Driving SPI pins directly from software (bit-banging) wastes CPU time and makes timing fragile. The chip needed a hardware SPI block that software sets up through registers and then leaves alone.</p>
 <p>Different devices expect different settings, so the block had to be configurable at runtime: clock polarity and phase, word size, bit order, clock speed and which chip select to use. It also had to stay safe when software does something wrong.</p></section>
     <section class="section"><h2>The Process</h2><h3>Spec first</h3>
@@ -59,11 +59,7 @@
 <h3>Optimization and testing</h3>
 <p>After the first version worked, I optimized the RTL for area and cut it by 5%. A SystemVerilog testbench with an SPI slave model runs three directed tests. The first sends 32-bit words in mode 1 and checks both directions. The second sends nine 8-bit words to push the FIFO past full. The third tries an illegal chip-select change mid-transfer and checks that the hardware ignores it, flags the error, raises the interrupt and still finishes the word correctly.</p></section>
     <section class="section"><h2>The Outcome</h2><p>The peripheral passes all of its directed checks and is going into SiliconJackets' third RISC-V core tapeout. The spec also lists the assertions the DV team should add, and it documents one known limitation for software: a clock-ratio setting of 0 or 1 hangs the core, so drivers must use 2 or more.</p></section>
-    <section class="section"><h2>What I Learned</h2><ul>
-<li><strong>Write the spec first:</strong> deciding every register and edge case on paper made the RTL faster to write and much easier to review.</li>
-<li><strong>Design for the software that will use it:</strong> most of the complexity is in handling mistakes safely, not in the shift register.</li>
-<li><strong>Think like DV:</strong> listing the assertions and corner cases for the verification team made me catch my own bugs earlier.</li>
-</ul></section>
+    
     
     <nav class="pager" aria-label="More projects"><a href="project-risc-v-cpu.html"><small>← Previous</small><strong>5-Stage RISC-V CPU</strong></a><a class="next" href="project-haptic-headband.html"><small>Next →</small><strong>Accessible Gaming Headband</strong></a></nav>
   </div>
