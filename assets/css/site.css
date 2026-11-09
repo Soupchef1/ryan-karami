@@ -246,3 +246,4 @@ a.card:hover { transform: translateY(-3px); border-color: var(--accent); color: 
 .project-page .section ul { padding-left: 20px; } .project-page .section li { margin-bottom: 8px; }
 .card .thumb.diagram > img { object-fit: contain; background: #FAF5EC; padding: 8px; }
 .card .thumb:has(> img) { border-bottom: 1px solid var(--line); }
+.bio { margin-bottom: 24px; } .bio p { margin-bottom: 1em; }
