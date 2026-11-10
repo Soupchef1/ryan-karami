@@ -45,10 +45,7 @@
         var main = doc.querySelector('main');
         if (!main) return null;
         main.querySelectorAll('script, style, .slot-label').forEach(function (n) { n.remove(); });
-        var h1 = main.querySelector('h1');
-        var title = clean(doc.title.replace(/\s*·\s*Ryan Karami$/, '')) || 'Home';
-        if (url === 'index.html') title = 'Home';
-        else if (h1) title = clean(h1.textContent) || title;
+        var title = url === 'index.html' ? 'Home' : (clean(doc.title.replace(/\s*·\s*Ryan Karami$/, '')) || url);
         var heads = Array.prototype.map.call(main.querySelectorAll('h2, h3'), function (h) { return clean(h.textContent); }).join(' ');
         return { url: url, title: title, heads: heads, text: clean(main.textContent) };
       }).catch(function () { return null; });
