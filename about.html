@@ -8,14 +8,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=202611100015">
+<link rel="stylesheet" href="assets/css/site.css?v=202611100030">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="index.html">Ryan <span>Karami</span></a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <div class="header-tools">
+      <form class="site-search" role="search" action="#" autocomplete="off">
+        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <input type="search" id="site-search-input" placeholder="Search the site" aria-label="Search the site" aria-controls="search-results" aria-autocomplete="list">
+        <ul class="search-results" id="search-results" role="listbox" hidden></ul>
+      </form>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
     <ul class="nav" id="site-nav">
 <li><a href="index.html">Home</a></li>
 <li><a href="about.html" aria-current="page">About</a></li>
@@ -128,6 +135,6 @@
     <nav aria-label="Footer"><a href="about.html">About</a> <a href="projects.html">Projects</a> <a href="career.html">Career Goals</a> <a href="beyond.html">Beyond Engineering</a> <a href="resume.html">Resume</a> <a href="https://www.linkedin.com/in/ryan-karami">LinkedIn</a> <a href="https://github.com/Soupchef1">GitHub</a></nav>
   </div>
 </footer>
-<script src="assets/js/site.js" defer></script>
+<script src="assets/js/site.js?v=202611100030" defer></script>
 </body>
 </html>
