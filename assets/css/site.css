@@ -121,7 +121,7 @@ p { margin: 0 0 1em; }
 .hh-tag { color: #F0A57E; font-family: var(--font-body); font-size: clamp(.95rem, 1.8vw, 1.1rem); font-weight: 500; letter-spacing: .1em; margin: 0; }
 .hh-photo { min-height: 300px; }
 .home-lead { font-size: clamp(1.1rem, 2.2vw, 1.3rem); max-width: 46ch; margin: 0 auto 32px; color: var(--muted); line-height: 1.55; }
-.stack-btns { display: grid; gap: 14px; justify-items: center; }
+.stack-btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 .home-intro { background: var(--green); }
 .hi-grid { display: grid; grid-template-columns: 1fr; }
 @media (min-width: 820px) { .hi-grid { grid-template-columns: 1fr 1fr; } }
