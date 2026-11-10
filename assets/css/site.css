@@ -289,3 +289,8 @@ a.card:hover { transform: translateY(-3px); border-color: var(--accent); color: 
 .site-header .nav a { padding: 11px 12px; font-size: 1rem; }
 .site-header .nav a[aria-current="page"] { box-shadow: inset 3px 0 0 var(--green); border-radius: 0 4px 4px 0; }
 @media (max-width: 520px) { .site-header .nav { left: 12px; right: 12px; width: auto; } .brand { font-size: 1.2rem; } }
+
+.home-btn { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 40px; flex: none; border: 1px solid var(--line); border-radius: 8px; color: var(--text); }
+.home-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.home-btn:hover { border-color: var(--accent); color: var(--accent); }
+@media (max-width: 400px) { .header-tools { gap: 6px; } .home-btn, .menu-btn { width: 38px; } }
