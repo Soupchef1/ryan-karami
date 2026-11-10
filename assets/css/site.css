@@ -248,3 +248,18 @@ a.card:hover { transform: translateY(-3px); border-color: var(--accent); color: 
 .card .thumb.diagram > img { object-fit: contain; background: #FAF5EC; padding: 8px; }
 .card .thumb:has(> img) { border-bottom: 1px solid var(--line); }
 .bio { margin-bottom: 24px; } .bio p { margin-bottom: 1em; }
+
+/* home hero: a bit smaller */
+.hh-grid { max-width: 900px; margin: 0 auto; }
+.hh-photo { min-height: 300px; }
+.hh-name h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); }
+@media (min-width: 820px) { .hh-grid { min-height: 400px; } }
+
+/* projects page: vertical list, thumbnail on the left */
+.project-list { grid-template-columns: 1fr; gap: 18px; }
+@media (min-width: 700px) {
+  .project-list .card { flex-direction: row; }
+  .project-list .card .thumb { flex: 0 0 240px; aspect-ratio: auto; min-height: 170px; border-bottom: 0 !important; border-right: 1px solid var(--line); }
+  .project-list .card .body { padding: 18px 22px; }
+}
+.project-list a.card:hover { transform: translateY(-2px); }
