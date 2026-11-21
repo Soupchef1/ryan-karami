@@ -58,7 +58,7 @@
     <figure><img class="photo" src="assets/img/fir-board.jpg" alt="Digilent Arty S7-25 FPGA board on a desk, connected to a laptop by USB, with its activity LEDs lit" loading="lazy"><figcaption><span class="fignum">Figure 1.</span>The Arty S7-25 board on my desk, connected to my laptop over the USB-UART cable that carries audio in and out.</figcaption></figure>
 
     <section class="section"><h2>The Idea</h2>
-<p>Filtering is usually something you see as math on a whiteboard: a convolution sum, a frequency response, a few coefficients. I wanted to take one of those equations and turn it into a circuit I could actually listen to. The pitch was simple: pick a small FIR (finite impulse response) filter, build it as hardware on an FPGA, push real audio through it, and hear the difference.</p>
+<p>In ECE 2026 I have been learning about FIR filters, so I wanted to implement an FIR filter in hardware to actually apply the theoretical knowledge from the class.</p>
 <p>The starting design was a "5-9-5" low-pass filter, a three-tap smoothing filter for 8 kHz, 16-bit audio. That name stuck to the hardware block, which is still called <code>fir595</code>. I also wanted to try high-level synthesis (HLS), where you describe hardware in C++ and a compiler generates the Verilog, because I had only ever written RTL by hand. To keep the focus on the filter, I chose the simplest possible interface: plain UART to and from a laptop, with no AXI bus or processor in the loop.</p>
     </section>
 
