@@ -43,7 +43,7 @@
       <h1>FPGA FIR Filter and Signal Processor</h1>
     </header>
     <table class="projectmeta">
-      <tr><th>Team</th><td>Team of 2</td></tr>
+      <tr><th>Team</th><td>Solo project</td></tr>
       <tr><th>Tools</th><td>Vitis HLS (C++), SystemVerilog, Vivado, Python, Arty S7-25 (Spartan-7)</td></tr>
       <tr><th>Links</th><td><a href="https://github.com/Soupchef1/FGPA-FIR-Filter-and-Signal-Processor">GitHub repository</a></td></tr>
     </table>
@@ -59,11 +59,11 @@
 
     <section class="section"><h2>The Idea</h2>
 <p>Filtering is usually something you see as math on a whiteboard: a convolution sum, a frequency response, a few coefficients. I wanted to take one of those equations and turn it into a circuit I could actually listen to. The pitch was simple: pick a small FIR (finite impulse response) filter, build it as hardware on an FPGA, push real audio through it, and hear the difference.</p>
-<p>The starting design was a "5-9-5" low-pass filter, a three-tap smoothing filter for 8 kHz, 16-bit audio. That name stuck to the hardware block, which is still called <code>fir595</code>. I also wanted to try high-level synthesis (HLS), where you describe hardware in C++ and a compiler generates the Verilog, because I had only ever written RTL by hand. To keep the focus on the filter, we chose the simplest possible interface: plain UART to and from a laptop, with no AXI bus or processor in the loop.</p>
+<p>The starting design was a "5-9-5" low-pass filter, a three-tap smoothing filter for 8 kHz, 16-bit audio. That name stuck to the hardware block, which is still called <code>fir595</code>. I also wanted to try high-level synthesis (HLS), where you describe hardware in C++ and a compiler generates the Verilog, because I had only ever written RTL by hand. To keep the focus on the filter, I chose the simplest possible interface: plain UART to and from a laptop, with no AXI bus or processor in the loop.</p>
     </section>
 
     <section class="section"><h2>The Process</h2>
-<p>We worked in small, testable pieces, adding a new block only once the one before it worked.</p>
+<p>I worked in small, testable pieces, adding a new block only once the one before it worked.</p>
 <figure><a href="assets/img/fir-timeline.svg" title="Open full size"><img class="diagram" src="assets/img/fir-timeline.svg" alt="Timeline: Oct 15-16 UART receiver and Python host script; Oct 18 first 5-9-5 low-pass filter in Vitis HLS; Oct 24 full UART to FIR to UART pipeline; Oct 29-30 testbench passes 768 of 768 samples and the bitstream builds; Nov 7 high-pass taps with x4 gain verified on hardware" loading="lazy"></a><figcaption><span class="fignum">Figure 2.</span>Project timeline, from the first UART receiver to a bit-exact run on the board.</figcaption></figure>
 <h3>The system</h3>
 <p>On the laptop, <code>send_wav.py</code> reads any .wav file, mixes it to mono, resamples it to 8 kHz, and sends each 16-bit sample as two bytes at 1 Mbaud. On the FPGA, a UART receiver turns the serial line back into bytes, and a sample assembler pairs them into 16-bit samples. A small controller I wrote, <code>fir_ctrl</code>, feeds each sample to the HLS filter core and captures its result. Results go into a 512-sample FIFO, are split back into bytes, and leave through a UART transmitter. The script also limits how many samples are "in flight" at once, so the FIFO can never overflow even when the laptop is slow to read.</p>
