@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 250" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker>
+  </defs>
+  <rect width="1000" height="250" fill="#fff"/>
+  <line x1="20" y1="60" x2="978" y2="60" stroke="#000" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <g font-weight="bold" font-size="13" text-anchor="middle">
+    <text x="110" y="40">Oct 15–16</text>
+    <text x="305" y="40">Oct 18</text>
+    <text x="500" y="40">Oct 24</text>
+    <text x="695" y="40">Oct 29–30</text>
+    <text x="890" y="40">Nov 7</text>
+  </g>
+  <g fill="#000">
+    <rect x="104" y="54" width="12" height="12"/><rect x="299" y="54" width="12" height="12"/><rect x="494" y="54" width="12" height="12"/><rect x="689" y="54" width="12" height="12"/><rect x="884" y="54" width="12" height="12"/>
+  </g>
+  <g stroke="#666"><line x1="110" y1="66" x2="110" y2="90"/><line x1="305" y1="66" x2="305" y2="90"/><line x1="500" y1="66" x2="500" y2="90"/><line x1="695" y1="66" x2="695" y2="90"/><line x1="890" y1="66" x2="890" y2="90"/></g>
+
+  <rect x="22" y="90" width="176" height="135" fill="#dae8fc" stroke="#6c8ebf"/>
+  <text x="110" y="114" text-anchor="middle" font-weight="bold" font-size="13">UART + host script</text>
+  <text x="34" y="140">UART receiver in</text><text x="34" y="157">SystemVerilog; Python</text><text x="34" y="174">script that streams a</text><text x="34" y="191">.wav over the serial</text><text x="34" y="208">port</text>
+
+  <rect x="217" y="90" width="176" height="135" fill="#fff2cc" stroke="#d6b656"/>
+  <text x="305" y="114" text-anchor="middle" font-weight="bold" font-size="13">First HLS filter</text>
+  <text x="229" y="140">"5-9-5" low-pass FIR</text><text x="229" y="157">written in C++ and</text><text x="229" y="174">synthesized to Verilog</text><text x="229" y="191">with Vitis HLS</text>
+
+  <rect x="412" y="90" width="176" height="135" fill="#d5e8d4" stroke="#82b366"/>
+  <text x="500" y="114" text-anchor="middle" font-weight="bold" font-size="13">Full pipeline</text>
+  <text x="424" y="140">UART TX, sample</text><text x="424" y="157">assembler, FIR</text><text x="424" y="174">handshake wrapper</text><text x="424" y="191">and output FIFO wired</text><text x="424" y="208">into one top level</text>
+
+  <rect x="607" y="90" width="176" height="135" fill="#ffe6cc" stroke="#d79b00"/>
+  <text x="695" y="114" text-anchor="middle" font-weight="bold" font-size="13">Verified + built</text>
+  <text x="619" y="140">Testbench passes</text><text x="619" y="157">768/768 samples vs.</text><text x="619" y="174">Python model;</text><text x="619" y="191">bitstream generates</text>
+
+  <rect x="802" y="90" width="176" height="135" fill="#e1d5e7" stroke="#9673a6"/>
+  <text x="890" y="114" text-anchor="middle" font-weight="bold" font-size="13">High-pass on hardware</text>
+  <text x="814" y="140">New taps 64, −127, 64</text><text x="814" y="157">plus ×4 gain; real</text><text x="814" y="174">audio run on the board</text><text x="814" y="191">matches the model</text><text x="814" y="208">bit for bit</text>
+</svg>

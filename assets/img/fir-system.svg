@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 440" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#000">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker>
+  </defs>
+  <rect width="1000" height="440" fill="#fff"/>
+
+  <!-- host container -->
+  <rect x="20" y="20" width="960" height="125" fill="#fafafa" stroke="#666" stroke-dasharray="6 4"/>
+  <text x="32" y="40" font-weight="bold">Laptop · Python (send_wav.py)</text>
+
+  <rect x="40" y="58" width="150" height="62" fill="#f5f5f5" stroke="#666"/>
+  <text x="115" y="85" text-anchor="middle" font-weight="bold">input .wav</text>
+  <text x="115" y="103" text-anchor="middle" font-size="12">any rate / channels</text>
+
+  <rect x="220" y="58" width="200" height="62" fill="#fff2cc" stroke="#d6b656"/>
+  <text x="320" y="82" text-anchor="middle" font-weight="bold">Resample + quantize</text>
+  <text x="320" y="100" text-anchor="middle" font-size="12">mono, 8 kHz, int16</text>
+  <text x="320" y="114" text-anchor="middle" font-size="12">→ low byte, high byte</text>
+
+  <rect x="580" y="58" width="200" height="62" fill="#fff2cc" stroke="#d6b656"/>
+  <text x="680" y="82" text-anchor="middle" font-weight="bold">Reassemble + check</text>
+  <text x="680" y="100" text-anchor="middle" font-size="12">bytes → int16 samples</text>
+  <text x="680" y="114" text-anchor="middle" font-size="12">compare to fir_model.py</text>
+
+  <rect x="810" y="58" width="150" height="62" fill="#f5f5f5" stroke="#666"/>
+  <text x="885" y="85" text-anchor="middle" font-weight="bold">output .wav</text>
+  <text x="885" y="103" text-anchor="middle" font-size="12">filtered audio</text>
+
+  <line x1="190" y1="89" x2="218" y2="89" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+  <line x1="780" y1="89" x2="808" y2="89" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+
+  <!-- UART links -->
+  <polyline points="320,120 320,182 107,182 107,273" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+  <rect x="140" y="166" width="150" height="20" fill="#fff"/>
+  <text x="215" y="180" text-anchor="middle" font-size="12">USB-UART · 1 Mbaud</text>
+  <polyline points="892,273 892,182 680,182 680,122" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+  <rect x="710" y="166" width="150" height="20" fill="#fff"/>
+  <text x="785" y="180" text-anchor="middle" font-size="12">USB-UART · 1 Mbaud</text>
+
+  <!-- FPGA container -->
+  <rect x="20" y="215" width="960" height="205" fill="#fafafa" stroke="#666" stroke-dasharray="6 4"/>
+  <text x="32" y="235" font-weight="bold">Arty S7-25 FPGA · xc7s25 · 100 MHz</text>
+
+  <rect x="40" y="275" width="135" height="80" fill="#dae8fc" stroke="#6c8ebf"/>
+  <text x="107" y="305" text-anchor="middle" font-weight="bold">uart_rx</text>
+  <text x="107" y="324" text-anchor="middle" font-size="12">8N1 receiver</text>
+  <text x="107" y="340" text-anchor="middle" font-size="12">serial → byte</text>
+
+  <rect x="197" y="275" width="135" height="80" fill="#dae8fc" stroke="#6c8ebf"/>
+  <text x="264" y="305" text-anchor="middle" font-weight="bold">sample_assembler</text>
+  <text x="264" y="324" text-anchor="middle" font-size="12">2 bytes →</text>
+  <text x="264" y="340" text-anchor="middle" font-size="12">16-bit sample</text>
+
+  <rect x="354" y="265" width="135" height="100" fill="#d5e8d4" stroke="#82b366" stroke-width="2"/>
+  <text x="421" y="290" text-anchor="middle" font-weight="bold">fir_ctrl</text>
+  <rect x="366" y="300" width="111" height="52" fill="#fff" stroke="#82b366"/>
+  <text x="421" y="321" text-anchor="middle" font-weight="bold">fir595 (HLS)</text>
+  <text x="421" y="339" text-anchor="middle" font-size="12">64, −127, 64</text>
+
+  <rect x="511" y="275" width="135" height="80" fill="#ffe6cc" stroke="#d79b00"/>
+  <text x="578" y="305" text-anchor="middle" font-weight="bold">sample_fifo</text>
+  <text x="578" y="324" text-anchor="middle" font-size="12">512 samples</text>
+  <text x="578" y="340" text-anchor="middle" font-size="12">output buffer</text>
+
+  <rect x="668" y="275" width="135" height="80" fill="#dae8fc" stroke="#6c8ebf"/>
+  <text x="735" y="305" text-anchor="middle" font-weight="bold">serializer</text>
+  <text x="735" y="324" text-anchor="middle" font-size="12">sample → low,</text>
+  <text x="735" y="340" text-anchor="middle" font-size="12">then high byte</text>
+
+  <rect x="825" y="275" width="135" height="80" fill="#dae8fc" stroke="#6c8ebf"/>
+  <text x="892" y="305" text-anchor="middle" font-weight="bold">uart_tx</text>
+  <text x="892" y="324" text-anchor="middle" font-size="12">8N1 transmitter</text>
+  <text x="892" y="340" text-anchor="middle" font-size="12">byte → serial</text>
+
+  <g stroke="#000" stroke-width="1.3" marker-end="url(#a)">
+    <line x1="175" y1="315" x2="195" y2="315"/>
+    <line x1="332" y1="315" x2="352" y2="315"/>
+    <line x1="489" y1="315" x2="509" y2="315"/>
+    <line x1="646" y1="315" x2="666" y2="315"/>
+    <line x1="803" y1="315" x2="823" y2="315"/>
+  </g>
+  <g font-size="11" fill="#444" text-anchor="middle">
+    <text x="185" y="308">8</text><text x="342" y="308">16</text><text x="499" y="308">16</text><text x="656" y="308">16</text><text x="813" y="308">8</text>
+  </g>
+
+  <!-- LEDs -->
+  <rect x="354" y="385" width="449" height="24" fill="#f5f5f5" stroke="#666"/>
+  <text x="578" y="401" text-anchor="middle" font-size="12">LEDs: LD2 RX activity · LD3 TX activity · LD4 FIFO overflow (sticky)</text>
+</svg>

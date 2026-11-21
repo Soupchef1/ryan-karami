@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=202611100050">
+<link rel="stylesheet" href="assets/css/site.css?v=202611211400">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -34,7 +34,87 @@
     </ul>
   </div>
 </header>
-<main id="main"></main>
+<main id="main">
+<article class="project-page">
+  <div class="wrap read">
+    <a class="backlink" href="projects.html">← All projects</a>
+    <header class="project-head">
+      <p class="eyebrow">Discovery Project · Oct – Nov 2026</p>
+      <h1>FPGA FIR Filter and Signal Processor</h1>
+    </header>
+    <table class="projectmeta">
+      <tr><th>Team</th><td>Team of 2</td></tr>
+      <tr><th>Tools</th><td>Vitis HLS (C++), SystemVerilog, Vivado, Python, Arty S7-25 (Spartan-7)</td></tr>
+      <tr><th>Links</th><td><a href="https://github.com/Soupchef1/FGPA-FIR-Filter-and-Signal-Processor">GitHub repository</a></td></tr>
+    </table>
+    <p class="lede">A digital filter running in real hardware. A Python script streams a .wav file into a Spartan-7 FPGA over UART, a filter I wrote in C++ and synthesized with Vitis HLS processes every sample, and the filtered audio streams back to the laptop. The output matches a bit-accurate software model on every sample.</p>
+    <div class="readings">
+      <div class="reading"><div class="reading-val">8 kHz</div><div class="reading-unit">16-bit signed audio samples</div></div>
+      <div class="reading"><div class="reading-val">3 taps</div><div class="reading-unit">high-pass FIR, ×4 output gain</div></div>
+      <div class="reading"><div class="reading-val">1 Mbaud</div><div class="reading-unit">UART link in each direction</div></div>
+      <div class="reading"><div class="reading-val">100%</div><div class="reading-unit">of 71,805 hardware samples match the model</div></div>
+    </div>
+
+    <figure><img class="photo" src="assets/img/fir-board.jpg" alt="Digilent Arty S7-25 FPGA board on a desk, connected to a laptop by USB, with its activity LEDs lit" loading="lazy"><figcaption><span class="fignum">Figure 1.</span>The Arty S7-25 board on my desk, connected to my laptop over the USB-UART cable that carries audio in and out.</figcaption></figure>
+
+    <section class="section"><h2>The Idea</h2>
+<p>Filtering is usually something you see as math on a whiteboard: a convolution sum, a frequency response, a few coefficients. I wanted to take one of those equations and turn it into a circuit I could actually listen to. The pitch was simple: pick a small FIR (finite impulse response) filter, build it as hardware on an FPGA, push real audio through it, and hear the difference.</p>
+<p>The starting design was a "5-9-5" low-pass filter, a three-tap smoothing filter for 8 kHz, 16-bit audio. That name stuck to the hardware block, which is still called <code>fir595</code>. I also wanted to try high-level synthesis (HLS), where you describe hardware in C++ and a compiler generates the Verilog, because I had only ever written RTL by hand. To keep the focus on the filter, we chose the simplest possible interface: plain UART to and from a laptop, with no AXI bus or processor in the loop.</p>
+    </section>
+
+    <section class="section"><h2>The Process</h2>
+<p>We worked in small, testable pieces, adding a new block only once the one before it worked.</p>
+<figure><a href="assets/img/fir-timeline.svg" title="Open full size"><img class="diagram" src="assets/img/fir-timeline.svg" alt="Timeline: Oct 15-16 UART receiver and Python host script; Oct 18 first 5-9-5 low-pass filter in Vitis HLS; Oct 24 full UART to FIR to UART pipeline; Oct 29-30 testbench passes 768 of 768 samples and the bitstream builds; Nov 7 high-pass taps with x4 gain verified on hardware" loading="lazy"></a><figcaption><span class="fignum">Figure 2.</span>Project timeline, from the first UART receiver to a bit-exact run on the board.</figcaption></figure>
+<h3>The system</h3>
+<p>On the laptop, <code>send_wav.py</code> reads any .wav file, mixes it to mono, resamples it to 8 kHz, and sends each 16-bit sample as two bytes at 1 Mbaud. On the FPGA, a UART receiver turns the serial line back into bytes, and a sample assembler pairs them into 16-bit samples. A small controller I wrote, <code>fir_ctrl</code>, feeds each sample to the HLS filter core and captures its result. Results go into a 512-sample FIFO, are split back into bytes, and leave through a UART transmitter. The script also limits how many samples are "in flight" at once, so the FIFO can never overflow even when the laptop is slow to read.</p>
+<figure><a href="assets/img/fir-system.svg" title="Open full size"><img class="diagram" src="assets/img/fir-system.svg" alt="Block diagram: on the laptop, input.wav goes to a resample and quantize block, then over USB-UART at 1 Mbaud into the FPGA. In the FPGA: uart_rx, sample_assembler, fir_ctrl containing the fir595 HLS core, a 512-sample FIFO, a serializer and uart_tx, then back over USB-UART to a reassemble and check block and output.wav" loading="lazy"></a><figcaption><span class="fignum">Figure 3.</span>The full data path, from .wav file to FPGA and back.</figcaption></figure>
+<h3>The filter</h3>
+<p>The filter is about 30 lines of C++. A three-entry shift register holds the newest sample and the two before it. Each is multiplied by a coefficient and the products are summed. HLS pragmas turn the shift register into flip-flops instead of block RAM and unroll the loops into three multipliers that run in parallel. The coefficients are stored as Q7 fixed-point integers (the real value times 128), so the hardware never touches floating point.</p>
+<figure><a href="assets/img/fir-datapath.svg" title="Open full size"><img class="diagram" src="assets/img/fir-datapath.svg" alt="FIR datapath: x[n] passes through two z^-1 delay registers; x[n], x[n-1] and x[n-2] are multiplied by 64, -127 and 64, summed in a 24-bit accumulator, rounded and shifted right by 5, saturated to 16 bits, and output as y[n]" loading="lazy"></a><figcaption><span class="fignum">Figure 4.</span>The datapath HLS builds from my C++: two delay registers, three parallel multipliers, an adder chain, then rounding and saturation.</figcaption></figure>
+<h3>Verification</h3>
+<p>Before anything went on the board, I wrote a bit-accurate Python model of the filter. It generates test vectors (impulses, full-scale extremes, sine tones and noise) for a top-level SystemVerilog testbench that drives real UART waveforms into the design and checks every output. The simulation ends with <code>PASS: 768/768 samples match fir_model.py</code>. On hardware, the same model checks every sample that comes back from the board.</p>
+    </section>
+
+    <section class="section"><h2>Successes and Failures</h2>
+<p>The biggest design change came from listening. The low-pass filter worked, but its effect on 8 kHz audio was subtle and hard to hear in a demo. I redesigned it as a high-pass filter with taps of 0.5, −0.992 and 0.5, which places a null at 159 Hz and strips out the bass. That made the audio much quieter, so I added a ×4 (+12 dB) output gain. The gain then caused the next problem: loud treble overflowed 16 bits and wrapped around into loud pops. The fix was rounding plus saturation, so overflowing samples clip to the maximum value instead of wrapping.</p>
+<figure><img src="assets/img/fir-response.png" alt="Frequency response of the final filter: about -30 dB at DC, a deep null at 159 Hz, 0 dB near 950 Hz, +1 dB at 1 kHz and +18 dB at 4 kHz" loading="lazy"><figcaption><span class="fignum">Figure 5.</span>Frequency response of the final filter, including the ×4 gain: bass is removed, with a null at 159 Hz, and treble is boosted.</figcaption></figure>
+<p>Most of the other roadblocks were integration bugs rather than filter bugs:</p>
+<ul>
+<li><strong>The HLS handshake.</strong> The generated core uses an <code>ap_start</code>/<code>ap_done</code> handshake, and its result is only valid for the single clock cycle when <code>ap_done</code> is high. It also does not register its own input. <code>fir_ctrl</code> exists to hold the input steady and latch the result at exactly the right cycle.</li>
+<li><strong>Swapped bytes.</strong> If one stray byte reached the board before a run, every sample's high and low bytes were swapped, and every output mismatched. A synchronized reset button and a "press reset, then run" step in the script fixed it.</li>
+<li><strong>Tool setup.</strong> The Vivado project targeted the wrong chip, removing the LED pins from the constraints file broke bitstream generation, Python's <code>serial</code> package turned out to be a different library from <code>pyserial</code>, and one COM port was actually a Bluetooth link that timed out. None of these were hard once found, but each cost an afternoon.</li>
+</ul>
+    </section>
+
+    <section class="section"><h2>The Outcome</h2>
+<p>The final design runs on the Arty S7-25 at 100 MHz. In the hardware run below, all 71,805 samples that came back from the board matched the Python model exactly. Listen to the two clips: the output loses the low hum and bass, and the higher frequencies of the voice come forward.</p>
+<div class="audio-pair">
+  <div class="audio-card"><h3>Input</h3><p>input_8k.wav · the original clip at 8 kHz, 16-bit</p><audio controls preload="metadata" src="assets/audio/input_8k.wav"></audio><a href="assets/audio/input_8k.wav" download>Download input_8k.wav</a></div>
+  <div class="audio-card out"><h3>Output from the FPGA</h3><p>output.wav · the same clip after the hardware filter</p><audio controls preload="metadata" src="assets/audio/output.wav"></audio><a href="assets/audio/output.wav" download>Download output.wav</a></div>
+</div>
+<figure><img src="assets/img/fir-spectrogram.png" alt="Spectrograms of the input and output clips. The input has strong energy and steady hum lines below 200 Hz; in the output these are removed and frequencies above 1 kHz are brighter" loading="lazy"><figcaption><span class="fignum">Figure 6.</span>Spectrograms of the two clips. The hum lines below 200 Hz disappear in the output, energy below 300 Hz drops by about 29 dB, and the treble gets brighter.</figcaption></figure>
+    </section>
+
+    <section class="section"><h2>ECE Skills Gained</h2>
+<ul>
+<li><strong>Digital signal processing:</strong> designing FIR coefficients, reading a frequency response, and placing zeros to get the response I wanted.</li>
+<li><strong>Fixed-point arithmetic:</strong> Q7 coefficients, sizing a 24-bit accumulator so it can never overflow, rounding, and saturation.</li>
+<li><strong>High-level synthesis:</strong> writing C++ for Vitis HLS, using pragmas to control what hardware gets built, and integrating the generated Verilog through its control interface.</li>
+<li><strong>RTL design:</strong> UART transmit and receive, FIFOs, reset synchronization, and handshake logic in SystemVerilog.</li>
+<li><strong>Verification:</strong> writing a bit-accurate reference model, generating test vectors, and building a self-checking testbench.</li>
+<li><strong>Hardware bring-up:</strong> constraints, bitstream generation, programming the board, and debugging serial links between a PC and an FPGA.</li>
+</ul>
+    </section>
+
+    <section class="section"><h2>Final Thoughts</h2>
+<p>This project made DSP feel real to me. Hearing a filter I had designed on paper change real audio, and then seeing the hardware match my model on every sample, was the most satisfying part of the semester. It also showed me how much of hardware engineering happens around the core logic: interfaces, handshakes, verification and tool setup took far more time than the filter itself.</p>
+<p>It has made me more interested in digital hardware design, especially hardware built for computation. The multiply-accumulate at the heart of this filter is the same operation that AI and ML accelerators perform millions of times in parallel, and that is the direction I want to keep exploring. I would like to continue the project with a longer filter whose coefficients can be loaded over UART, an AXI-Stream interface, and an audio codec so the board can filter live sound in real time instead of a file.</p>
+    </section>
+
+    <nav class="pager" aria-label="More projects"><a class="next" href="project-risc-v-cpu.html"><small>Next →</small><strong>5-Stage RISC-V CPU</strong></a></nav>
+  </div>
+</article>
+</main>
 <footer class="site-footer">
   <div class="wrap">
     <span>Ryan Karami · Atlanta, Georgia · <a href="mailto:rkarami3@gatech.edu">rkarami3@gatech.edu</a></span>

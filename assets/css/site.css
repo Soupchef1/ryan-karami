@@ -179,7 +179,7 @@ a.card:hover { transform: translateY(-3px); border-color: var(--accent); color: 
 .projectmeta th, .projectmeta td { text-align: left; padding: 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
 .projectmeta th { width: 110px; padding-right: 14px; color: var(--green-ink); font-weight: 700; }
 .lede { font-size: 1.12rem; border-left: 4px solid var(--accent); padding-left: 18px; margin: 8px 0 28px; }
-.readings { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin: 0 0 36px; }
+.readings { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin: 0 0 36px; }
 .reading { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--green); border-radius: 0; padding: 16px 18px; }
 .reading:nth-child(even) { border-top-color: var(--accent); }
 .reading-val { font: 400 1.8rem/1.1 var(--font-head); }
@@ -295,3 +295,15 @@ a.card:hover { transform: translateY(-3px); border-color: var(--accent); color: 
 .home-btn:hover { border-color: var(--accent); color: var(--accent); }
 @media (max-width: 400px) { .header-tools { gap: 6px; } .home-btn, .menu-btn { width: 38px; } }
 .page-hero .hero-eyebrow { font-size: 1.15rem; letter-spacing: .16em; margin: 0; }
+
+/* ---------- project audio + square diagrams ---------- */
+.audio-pair { display: grid; gap: 16px; grid-template-columns: 1fr; margin: 24px 0 8px; }
+@media (min-width: 700px) { .audio-pair { grid-template-columns: 1fr 1fr; } }
+.audio-card { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--green); padding: 16px 18px; }
+.audio-card.out { border-top-color: var(--accent); }
+.audio-card h3 { margin: 0 0 4px !important; font-size: 1.1rem; }
+.audio-card p { font-size: .9rem; color: var(--muted); margin: 0 0 12px; }
+.audio-card audio { width: 100%; }
+.audio-card a { font-size: .85rem; }
+.project-page figure img.diagram { border-radius: 0; background: #fff; }
+.project-page figure img.photo { border-radius: 0; max-height: 720px; width: auto; margin: 0 auto; }

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 330" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#000">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker>
+  </defs>
+  <rect width="1100" height="330" fill="#fff"/>
+
+  <!-- shift register group -->
+  <rect x="100" y="22" width="600" height="90" fill="none" stroke="#666" stroke-dasharray="6 4"/>
+  <text x="112" y="40" font-size="12" fill="#444">shift register · ARRAY_PARTITION → flip-flops, not BRAM</text>
+
+  <text x="30" y="75" font-weight="bold">x[n]</text>
+  <line x1="62" y1="70" x2="268" y2="70" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+  <rect x="270" y="48" width="90" height="44" fill="#dae8fc" stroke="#6c8ebf"/>
+  <text x="315" y="75" text-anchor="middle" font-weight="bold">z⁻¹</text>
+  <line x1="360" y1="70" x2="528" y2="70" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+  <rect x="530" y="48" width="90" height="44" fill="#dae8fc" stroke="#6c8ebf"/>
+  <text x="575" y="75" text-anchor="middle" font-weight="bold">z⁻¹</text>
+  <line x1="620" y1="70" x2="660" y2="70" stroke="#000" stroke-width="1.3"/>
+
+  <g fill="#000"><rect x="126" y="66" width="8" height="8"/><rect x="396" y="66" width="8" height="8"/><rect x="656" y="66" width="8" height="8"/></g>
+  <g font-size="11" fill="#444"><text x="140" y="62">x[n]</text><text x="410" y="62">x[n−1]</text><text x="630" y="105">x[n−2]</text></g>
+
+  <!-- taps -->
+  <g stroke="#000" stroke-width="1.3" marker-end="url(#a)">
+    <line x1="130" y1="74" x2="130" y2="138"/>
+    <line x1="400" y1="74" x2="400" y2="138"/>
+    <line x1="660" y1="70" x2="660" y2="138"/>
+  </g>
+  <rect x="80" y="140" width="100" height="44" fill="#fff2cc" stroke="#d6b656"/>
+  <text x="130" y="167" text-anchor="middle" font-weight="bold">× 64</text>
+  <rect x="350" y="140" width="100" height="44" fill="#fff2cc" stroke="#d6b656"/>
+  <text x="400" y="167" text-anchor="middle" font-weight="bold">× −127</text>
+  <rect x="610" y="140" width="100" height="44" fill="#fff2cc" stroke="#d6b656"/>
+  <text x="660" y="167" text-anchor="middle" font-weight="bold">× 64</text>
+  <text x="725" y="160" font-size="12" fill="#444">Q7 taps: 0.5, −0.992, 0.5</text>
+  <text x="725" y="176" font-size="12" fill="#444">UNROLL → 3 multipliers in parallel</text>
+
+  <!-- adders -->
+  <polyline points="130,184 130,262 373,262" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+  <line x1="400" y1="184" x2="400" y2="238" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+  <rect x="375" y="240" width="50" height="44" fill="#d5e8d4" stroke="#82b366"/>
+  <text x="400" y="268" text-anchor="middle" font-weight="bold" font-size="18">+</text>
+  <line x1="425" y1="262" x2="633" y2="262" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+  <line x1="660" y1="184" x2="660" y2="238" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+  <rect x="635" y="240" width="50" height="44" fill="#d5e8d4" stroke="#82b366"/>
+  <text x="660" y="268" text-anchor="middle" font-weight="bold" font-size="18">+</text>
+  <text x="520" y="254" text-anchor="middle" font-size="11" fill="#444">24-bit accumulator</text>
+
+  <!-- output -->
+  <line x1="685" y1="262" x2="733" y2="262" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+  <rect x="735" y="232" width="135" height="60" fill="#ffe6cc" stroke="#d79b00"/>
+  <text x="802" y="257" text-anchor="middle" font-weight="bold">(acc + 16) &gt;&gt; 5</text>
+  <text x="802" y="276" text-anchor="middle" font-size="12">÷128, ×4 gain, round</text>
+  <line x1="870" y1="262" x2="893" y2="262" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+  <rect x="895" y="232" width="120" height="60" fill="#e1d5e7" stroke="#9673a6"/>
+  <text x="955" y="257" text-anchor="middle" font-weight="bold">saturate</text>
+  <text x="955" y="276" text-anchor="middle" font-size="12">to int16</text>
+  <line x1="1015" y1="262" x2="1040" y2="262" stroke="#000" stroke-width="1.3" marker-end="url(#a)"/>
+  <text x="1045" y="267" font-weight="bold">y[n]</text>
+</svg>
